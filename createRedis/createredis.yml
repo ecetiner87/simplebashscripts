@@ -1,0 +1,40 @@
+---
+- name: Redis Installation and Configuration
+  hosts: redis
+  
+  tasks:
+
+    - name: Create new directory
+      file:
+        path: /argela/redis/{{ redisname }} 
+        state: directory
+
+    - name: Ensure LOG directory exists 
+      file:
+        path: /argela/LOGS/
+        state: directory
+
+    - name: Create new LOG file
+      file:
+        path: /argela/LOGS/{{ redisname }}.log
+        state: touch
+
+    - name: Generate new redis.conf file
+      template: src={{ filename }}.conf.j2 dest=/argela/redis/{{ redisname }}/redis.conf owner=root group=root mode=0644
+
+    - name: Update redis conf file
+      replace:
+        path: /argela/redis/{{ redisname }}/redis.conf
+        regexp: 'portnum'
+        replace: "{{ redisport }}"
+
+    - name: Update redis conf file
+      replace:
+        path: /argela/redis/{{ redisname }}/redis.conf
+        regexp: 'newredis'
+        replace: "{{ redisname }}"
+
+    - name: Activate New Redis
+      shell: /usr/local/bin/redis-server /argela/redis/{{ redisname }}/redis.conf
+
+
