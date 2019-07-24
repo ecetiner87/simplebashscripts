@@ -1,0 +1,11 @@
+# Record Terminal Sessions
+if [ "x$SESSION_RECORD" = "x" ]
+then
+timestamp=`date "+%m%d%Y%H%M"`
+IP=`who am i | awk '{print $5}'`
+output=/var/log/session/session.$USER.$$.$timestamp.$IP
+SESSION_RECORD=started
+export SESSION_RECORD
+script -t -f -q 2>${output}.timing $output
+exit
+fi
